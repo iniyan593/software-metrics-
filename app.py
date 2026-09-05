@@ -17,6 +17,44 @@ from explainability import generate_shap_attributions, generate_insights
 
 st.set_page_config(page_title="EWSS 2.0 Prototype", layout="wide")
 
+if "entered_app" not in st.session_state:
+    st.session_state.entered_app = False
+
+if not st.session_state.entered_app:
+    st.title("🌱 Welcome to EWSS 2.0")
+    st.caption("Effluent Water Sustainability & Reuse Assessment Platform")
+    
+    st.markdown("""
+    ### 🚀 Next-Generation Decision Support for Industrial Eco-Compliance
+    **EWSS 2.0** combines real-time distillery effluent telemetry with hydrological feeds from the **Central Water Commission (CWC)** and **Central Ground Water Board (CGWB)** to quantify environmental risk, water reuse feasibility, and regulatory compliance.
+    """)
+
+    st.divider()
+
+    st.markdown("### 🌟 Key Platform Capabilities")
+    col1, col2, col3, col4 = st.columns(4)
+    with col1:
+        st.info("📊 **Telemetry Fusion**\n\nIntegrates pH, COD, BOD, TDS with live CWC rainfall & CGWB groundwater levels.")
+    with col2:
+        st.success("🧮 **AHP-TOPSIS Scoring**\n\nComputes 0–100 composite sustainability score with 95% statistical confidence bounds.")
+    with col3:
+        st.warning("🔍 **SHAP Diagnostics**\n\nProvides explainable root-cause point deductions and automated engineering alerts.")
+    with col4:
+        st.error("🌐 **Federated Learning**\n\nMulti-state model consensus (FedAvg) without sharing sensitive local raw telemetry.")
+
+    st.divider()
+
+    st.markdown("### 🎯 Launch EWSS 2.0 Assessment Platform")
+    c1, c2, c3 = st.columns([1, 2, 1])
+    with c2:
+        if st.button("🚀 Enter Dashboard & Analysis Platform", type="primary", use_container_width=True):
+            st.session_state.entered_app = True
+            st.rerun()
+
+    st.stop()
+
+st.sidebar.button("🏠 Return to Welcome Page", on_click=lambda: st.session_state.update({"entered_app": False}), use_container_width=True)
+
 st.title("🌱 EWSS 2.0 — Sustainability & Reuse Assessment Platform")
 st.markdown("Real-time decision support combining distillery telemetry, CWC rainfall, CGWB groundwater feeds, and Federated Learning.")
 
