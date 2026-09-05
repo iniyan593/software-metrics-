@@ -125,17 +125,31 @@ with tab_assessment:
 
     st.sidebar.divider()
     st.sidebar.header("🕹️ Digital Twin Row Inspector")
+    
+    # Session isolation indicator
+    st.sidebar.caption("🔒 **Private Session Active** — Changes made here are isolated and only visible to you.")
+
+    # Initialize Session State for Reset Control
+    if "reset_trigger" not in st.session_state:
+        st.session_state.reset_trigger = 0
+
     row_idx = st.sidebar.number_input("Select Dataset Row Index", min_value=0, max_value=max(0, len(master_df)-1), value=0)
     sample_row = master_df.iloc[row_idx]
 
+    # Reset Button to clear custom slider modifications and revert to baseline CSV values
+    if st.sidebar.button("🔄 Reset Sliders to Row Defaults", use_container_width=True):
+        st.session_state.reset_trigger += 1
+        st.rerun()
+
+    # Dynamic key bindings ensure sliders reset cleanly on button click
     raw_inputs = {
-        "pH": st.sidebar.slider("pH Level", 4.0, 10.0, float(np.clip(sample_row.get("pH", 7.2), 4.0, 10.0)), 0.1),
-        "COD_mgL": st.sidebar.slider("COD (mg/L)", 10000.0, 120000.0, float(np.clip(sample_row.get("COD_mgL", 75000.0), 10000.0, 120000.0)), 1000.0),
-        "BOD_mgL": st.sidebar.slider("BOD (mg/L)", 5000.0, 65000.0, float(np.clip(sample_row.get("BOD_mgL", 42000.0), 5000.0, 65000.0)), 1000.0),
-        "TDS_mgL": st.sidebar.slider("TDS (mg/L)", 500.0, 6000.0, float(np.clip(sample_row.get("TDS_mgL", 3100.0), 500.0, 6000.0)), 100.0),
-        "Water_Consumption_Ratio": st.sidebar.slider("Water Ratio (L/L Ethanol)", 4.0, 20.0, float(np.clip(sample_row.get("Water_Consumption_Ratio", 11.5), 4.0, 20.0)), 0.5),
-        "Groundwater_Depth_m": st.sidebar.slider("Groundwater Depth (m bgl)", 2.0, 35.0, float(np.clip(sample_row.get("Groundwater_Depth_m", 15.0), 2.0, 35.0)), 0.5),
-        "Rainfall_mm": st.sidebar.slider("Daily Rainfall (mm)", 0.0, 100.0, float(np.clip(sample_row.get("Rainfall_mm", 10.0), 0.0, 100.0)), 1.0)
+        "pH": st.sidebar.slider("pH Level", 4.0, 10.0, float(np.clip(sample_row.get("pH", 7.2), 4.0, 10.0)), 0.1, key=f"ph_val_{row_idx}_{st.session_state.reset_trigger}"),
+        "COD_mgL": st.sidebar.slider("COD (mg/L)", 10000.0, 120000.0, float(np.clip(sample_row.get("COD_mgL", 75000.0), 10000.0, 120000.0)), 1000.0, key=f"cod_val_{row_idx}_{st.session_state.reset_trigger}"),
+        "BOD_mgL": st.sidebar.slider("BOD (mg/L)", 5000.0, 65000.0, float(np.clip(sample_row.get("BOD_mgL", 42000.0), 5000.0, 65000.0)), 1000.0, key=f"bod_val_{row_idx}_{st.session_state.reset_trigger}"),
+        "TDS_mgL": st.sidebar.slider("TDS (mg/L)", 500.0, 6000.0, float(np.clip(sample_row.get("TDS_mgL", 3100.0), 500.0, 6000.0)), 100.0, key=f"tds_val_{row_idx}_{st.session_state.reset_trigger}"),
+        "Water_Consumption_Ratio": st.sidebar.slider("Water Ratio (L/L Ethanol)", 4.0, 20.0, float(np.clip(sample_row.get("Water_Consumption_Ratio", 11.5), 4.0, 20.0)), 0.5, key=f"wcr_val_{row_idx}_{st.session_state.reset_trigger}"),
+        "Groundwater_Depth_m": st.sidebar.slider("Groundwater Depth (m bgl)", 2.0, 35.0, float(np.clip(sample_row.get("Groundwater_Depth_m", 15.0), 2.0, 35.0)), 0.5, key=f"gwd_val_{row_idx}_{st.session_state.reset_trigger}"),
+        "Rainfall_mm": st.sidebar.slider("Daily Rainfall (mm)", 0.0, 100.0, float(np.clip(sample_row.get("Rainfall_mm", 10.0), 0.0, 100.0)), 1.0, key=f"rf_val_{row_idx}_{st.session_state.reset_trigger}")
     }
 
     sub_scores = compute_all_subscores(raw_inputs)
